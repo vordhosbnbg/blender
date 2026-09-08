@@ -12,6 +12,36 @@ through Arch Linux's `/lib` symlink find their headers under `/usr/include`.
 System Vulkan configuration checks for the separately packaged SPIR-V headers,
 so a missing `spirv-headers` package is reported before compilation starts.
 
+## Fork and upstream sync
+
+Local development uses `main`, which tracks `origin/main` in the personal fork:
+
+- `origin`: `git@github.com:vordhosbnbg/blender.git`
+- `upstream`: `git@github.com:blender/blender.git`
+
+Git LFS retains the existing Blender asset-server URL. Local lock verification
+for that endpoint is disabled to avoid its authentication prompt during pushes
+to the fork:
+
+```sh
+git config lfs.https://projects.blender.org/blender/blender.git/info/lfs.locksverify false
+```
+
+With local changes committed, sync from the Blender source directory:
+
+```sh
+git switch main
+git pull --ff-only
+git fetch upstream
+git rebase upstream/main
+# Resolve any conflicts, rebuild, and run checks relevant to the changes.
+git push --force-with-lease origin main
+```
+
+Keep fork-specific commits grouped by purpose in a linear series on top of
+upstream. Rebasing rewrites their commit IDs, so publish with `--force-with-lease`.
+The configure and build commands below keep the existing system-library profile.
+
 ## Configure and build
 
 Run from the Blender source directory. The GPU settings below match the local
@@ -93,6 +123,15 @@ the restricted agent sandbox blocks those services and can stall audio shutdown.
 The local checkout contained 25 untracked shader compatibility headers in their
 old locations under `source/blender/gpu/shaders`. They shadowed the tracked headers
 in `shaders/compat` and broke Workbench's C++ shader validation with missing
-`rayQueryEXT` declarations. All 25 files matched historical Git blobs and were
-preserved under `.source-backup/20260908`, with original paths and checksums in
-`manifest.json`. The current tracked headers already provide the required API.
+`rayQueryEXT` declarations. These were initially archived under
+`.source-backup/20260908`. The current tracked headers already provide the required
+API.
+
+On 2026-09-08, a further audit verified that all 223 remaining untracked source
+files exactly matched historical Git versions. They were obsolete headers,
+shaders, build scripts, and other sources whose paths had been removed or renamed
+upstream. At the user's request, those 223 files and the 25 archived headers were
+deleted after rechecking their checksums and Git blobs. The backup directory and
+its manifest were also removed. The ignored `build/` and `build-system/`
+directories, including the Blender executable and rendered artwork, were
+preserved; no tracked source files were changed.
