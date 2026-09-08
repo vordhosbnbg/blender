@@ -6,7 +6,6 @@
 #include "camera.hh"
 
 #include <pxr/base/gf/camera.h>
-#include <pxr/imaging/glf/drawTarget.h>
 #include <pxr/usd/usdGeom/camera.h>
 
 #include "DNA_camera_types.h"

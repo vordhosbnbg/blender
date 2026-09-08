@@ -167,6 +167,16 @@ if(WITH_VULKAN_BACKEND)
     find_package(PkgConfig)
     pkg_check_modules(VULKAN REQUIRED vulkan)
     pkg_check_modules(SHADERC REQUIRED shaderc)
+
+    # Some distributions package the SPIR-V headers separately from ShaderC.
+    # The Vulkan shader compiler includes them directly.
+    find_path(SPIRV_HEADERS_INCLUDE_DIR
+      NAMES spirv/unified1/spirv.h
+      HINTS ${SHADERC_INCLUDE_DIRS}
+      REQUIRED
+    )
+    mark_as_advanced(SPIRV_HEADERS_INCLUDE_DIR)
+    list(APPEND SHADERC_INCLUDE_DIRS ${SPIRV_HEADERS_INCLUDE_DIR})
   endif()
 endif()
 add_bundled_libraries(vulkan/lib)
