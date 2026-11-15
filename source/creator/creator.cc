@@ -615,6 +615,10 @@ int main(int argc,
 
   WM_init(C, argc, argv);
 
+#if defined(WITH_AGENT_BRIDGE) && !defined(WITH_PYTHON_MODULE)
+  main_args_agent_bridge_start(C);
+#endif
+
 #ifndef WITH_PYTHON
   fprintf(stderr,
           "\n"

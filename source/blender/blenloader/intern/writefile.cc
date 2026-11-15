@@ -2390,6 +2390,12 @@ void BlendWriter::generated_pointer_tag(const void *data)
     return;
   }
   if (!this->is_undo()) {
+    /* Temporary storage can reuse an address from another ID already written. Replace that
+     * mapping so generated data keeps stable addresses independently of allocation reuse. */
+    auto &stable_address_ids = this->wd->stable_address_ids;
+    const uint64_t address_id = get_next_stable_address_id(*this->wd,
+                                                           stable_address_ids.next_id_hint);
+    stable_address_ids.pointer_map.add_overwrite(data, address_id);
     return;
   }
   const uint64_t address_id = get_address_id_for_undo(*this->wd);

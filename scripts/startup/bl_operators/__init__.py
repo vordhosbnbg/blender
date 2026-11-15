@@ -49,6 +49,9 @@ _modules = [
 
 import bpy
 
+if hasattr(bpy, "agent_bridge"):
+    _modules.append("agent_bridge")
+
 if bpy.app.build_options.freestyle:
     _modules.append("freestyle")
 

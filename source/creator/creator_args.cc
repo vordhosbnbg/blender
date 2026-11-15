@@ -726,6 +726,11 @@ static void print_help(bArgs *ba, bool all)
   BLI_args_print_arg_doc(ba, "--python-use-user-env");
   BLI_args_print_arg_doc(ba, "--addons");
 
+#  ifdef WITH_AGENT_BRIDGE
+  PRINT("\nNative Agent Bridge:\n");
+  BLI_args_print_arg_doc(ba, "--agent-bridge");
+  BLI_args_print_arg_doc(ba, "--disable-agent-bridge");
+#  endif
   PRINT("\n");
   PRINT("Network Options:\n");
   BLI_args_print_arg_doc(ba, "--online-mode");
@@ -2568,6 +2573,37 @@ static int arg_handle_render_frame(int argc, const char **argv, void *data)
   return 0;
 }
 
+#  ifdef WITH_AGENT_BRIDGE
+static bool agent_bridge_enabled = true;
+static const char arg_handle_agent_bridge_doc[] =
+    "\n\tEnable the native local agent bridge at startup (default).";
+static int arg_handle_agent_bridge(int /*argc*/, const char ** /*argv*/, void * /*data*/)
+{
+  agent_bridge_enabled = true;
+  return 0;
+}
+static const char arg_handle_agent_bridge_disable_doc[] =
+    "\n\tDisable automatic startup of the native local agent bridge for this process.";
+static int arg_handle_agent_bridge_disable(int /*argc*/, const char ** /*argv*/, void * /*data*/)
+{
+  agent_bridge_enabled = false;
+  return 0;
+}
+
+void main_args_agent_bridge_start(bContext *C)
+{
+  if (!agent_bridge_enabled) {
+    return;
+  }
+  const char *imports[] = {"bpy", nullptr};
+  if (!BPY_run_string_eval(
+          C, imports, "bpy.agent_bridge.status()['running'] or bpy.agent_bridge.start()"))
+  {
+    fprintf(stderr, "Error: could not start the native agent bridge.\n");
+  }
+}
+#  endif
+
 static const char arg_handle_render_animation_doc[] =
     "\n\t"
     "Render frames from start to end (inclusive).";
@@ -3143,6 +3179,11 @@ void main_args_setup(bContext *C, bArgs *ba, bool all)
    * Also and commands that exit after usage. */
   BLI_args_pass_set(ba, ARG_PASS_SETTINGS);
   BLI_args_add(ba, "-h", "--help", CB(arg_handle_print_help), ba);
+#  ifdef WITH_AGENT_BRIDGE
+  BLI_args_add(ba, nullptr, "--agent-bridge", CB(arg_handle_agent_bridge), nullptr);
+  BLI_args_add(
+      ba, nullptr, "--disable-agent-bridge", CB(arg_handle_agent_bridge_disable), nullptr);
+#  endif
 
   /* MS-Windows only. */
   BLI_args_add(ba, "/?", nullptr, CB_EX(arg_handle_print_help, win32), ba);

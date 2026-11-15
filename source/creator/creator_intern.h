@@ -27,6 +27,10 @@ extern "C" {
  * Used for documentation (see Python API: `bpy.app.help_text(all=True)`).
  */
 void main_args_setup(struct bContext *C, struct bArgs *ba, bool all);
+#  ifdef WITH_AGENT_BRIDGE
+/** Start the default local service after WM/Python initialization, respecting startup flags. */
+void main_args_agent_bridge_start(struct bContext *C);
+#  endif
 /**
  * Handler for loading blend files.
  * \note arguments that cannot be parsed are assumed to be blend files.

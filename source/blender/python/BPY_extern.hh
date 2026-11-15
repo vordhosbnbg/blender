@@ -114,6 +114,9 @@ void BPY_DECREF_RNA_INVALIDATE(void *pyob_ptr);
  * \param C: The context to set. In rare cases C can be null.
  */
 void BPY_context_set(bContext *C);
+
+/** Stop owned native-bridge subprocesses before scene/Python teardown. No-op if never started. */
+void BPY_agent_bridge_shutdown();
 /**
  * Use for updating while a python script runs - in case of file load.
  * \param C: The context to activate as `bpy.context`. In rare cases C can be null.

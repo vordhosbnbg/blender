@@ -72,6 +72,10 @@
 #  include "BPY_extern_python.hh"
 #  include "BPY_extern_run.hh"
 #endif
+#ifdef WITH_AGENT_BRIDGE
+#  include "AGENT_service.hh"
+#  include "BPY_extern.hh"
+#endif
 
 #include "GHOST_ISystem.hh"
 
@@ -519,6 +523,11 @@ void UV_clipboard_free();
 
 void WM_exit_ex(bContext *C, const bool do_python_exit, const bool do_user_exit_actions)
 {
+#ifdef WITH_AGENT_BRIDGE
+  /* Join I/O before freeing any scene data or the embedded Python runtime. */
+  BPY_agent_bridge_shutdown();
+  agent_bridge::stop();
+#endif
   wmWindowManager *wm = C ? CTX_wm_manager(C) : nullptr;
 
   /* While nothing technically prevents saving user data in background mode,

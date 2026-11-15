@@ -111,6 +111,10 @@ if(WITH_PYTHON)
   endif()
 endif()
 
+if(WITH_AGENT_BRIDGE)
+  add_definitions(-DWITH_AGENT_BRIDGE)
+endif()
+
 if(WITH_HEADLESS)
   add_definitions(-DWITH_HEADLESS)
 endif()

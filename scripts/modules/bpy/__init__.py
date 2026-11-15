@@ -36,6 +36,10 @@ from . import (
     utils,
 )
 
+# Present only in builds with WITH_AGENT_BRIDGE. Importing never starts a listener.
+if hasattr(__import__("_bpy"), "agent_bridge"):
+    from bl_agent import api as agent_bridge
+
 
 def main():
     import sys
@@ -62,6 +66,8 @@ def main():
         "bpy.app.translations": app.translations,
         "bpy.types": types,
     })
+    if "agent_bridge" in globals():
+        sys.modules["bpy.agent_bridge"] = agent_bridge
 
     # Denormals are flushed to zero on all threads, which makes numpy (before 2.4)
     # warn when it computes `finfo` for a type. Remove once numpy 2.4+ is shipped.

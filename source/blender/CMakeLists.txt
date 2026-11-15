@@ -110,6 +110,9 @@ set(SRC_DNA_OTHER_INC
 )
 
 add_subdirectory(datatoc)
+if(WITH_AGENT_BRIDGE)
+  add_subdirectory(agent_bridge)
+endif()
 add_subdirectory(gpu/shader_tool)
 add_subdirectory(editors)
 add_subdirectory(windowmanager)

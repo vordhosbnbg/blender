@@ -58,6 +58,9 @@
 #include "../generic/idprop_py_api.hh"
 #include "../generic/idprop_py_ui_api.hh"
 #include "bpy_msgbus.hh"
+#ifdef WITH_AGENT_BRIDGE
+#  include "bpy_agent_bridge.hh"
+#endif
 
 #ifdef WITH_FREESTYLE
 #  include "BPy_Freestyle.h"
@@ -826,6 +829,9 @@ void BPy_init_modules(bContext *C)
   PyModule_AddObject(mod, "_utils_units", BPY_utils_units());
   PyModule_AddObject(mod, "_utils_previews", BPY_utils_previews_module());
   PyModule_AddObject(mod, "msgbus", BPY_msgbus_module());
+#ifdef WITH_AGENT_BRIDGE
+  PyModule_AddObject(mod, "agent_bridge", BPY_agent_bridge_module());
+#endif
 
   PointerRNA ctx_ptr = RNA_pointer_create_discrete(nullptr, RNA_Context, C);
   bpy_context_module = reinterpret_cast<BPy_StructRNA *>(pyrna_struct_CreatePyObject(&ctx_ptr));

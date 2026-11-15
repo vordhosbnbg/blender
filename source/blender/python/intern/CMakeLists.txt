@@ -148,6 +148,12 @@ set(LIB
 )
 
 # Only to check if `buildinfo` is available.
+if(WITH_AGENT_BRIDGE)
+  list(APPEND SRC bpy_agent_bridge.cc bpy_agent_bridge.hh)
+  list(APPEND LIB PRIVATE bf::agent_bridge)
+  add_definitions(-DWITH_AGENT_BRIDGE)
+endif()
+
 if(WITH_BUILDINFO)
   add_definitions(-DBUILD_DATE)
 endif()

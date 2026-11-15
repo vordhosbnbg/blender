@@ -118,6 +118,11 @@ set(LIB
   PRIVATE bf::dependencies::optional::audaspace
 )
 
+if(WITH_AGENT_BRIDGE)
+  list(APPEND LIB PRIVATE bf::agent_bridge)
+  add_definitions(-DWITH_AGENT_BRIDGE)
+endif()
+
 if(WITH_HEADLESS)
   add_definitions(-DWITH_HEADLESS)
 else()
